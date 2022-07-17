@@ -44,11 +44,11 @@
 
 int main(int argc, char **argv)
 {
-    if argc != 2 {
+    if (argc != 2) {
       fprintf(stderr, "usage: %s <text>\n", argv[0]);
       exit(1);
     }
-    if strcmp(argv[1], "") == 0 {
+    if (strcmp(argv[1], "") == 0) {
       fprintf(stderr, "error blank text %s\n", argv[1]);
       exit(1);
     }
