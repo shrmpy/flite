@@ -481,3 +481,88 @@ int cst_wave_load_riff_fd(cst_wave *w,cst_file fd)
 
     return CST_OK_FORMAT;
 }
+
+
+
+int fgj_wave_copy_riff(cst_wave *w)
+{
+    const char *info;
+    short d_short;
+    int d_int, n;
+    int num_bytes;
+    cst_file fd;
+
+    fd = stdout; /* stdout is fd 1 */
+    fflush(stdout);
+    info = "RIFF";
+    cst_fwrite(fd,info,4,1);
+    num_bytes = (cst_wave_num_samples(w)
+		 * cst_wave_num_channels(w)
+		 * sizeof(short)) + 8 + 16 + 12;
+    if (CST_BIG_ENDIAN) num_bytes = SWAPINT(num_bytes);
+    cst_fwrite(fd,&num_bytes,4,1); /* num bytes in whole file */
+    info = "WAVE";
+    cst_fwrite(fd,info,1,4);
+    info = "fmt ";
+    cst_fwrite(fd,info,1,4);
+    num_bytes = 16;                   /* size of header */
+    if (CST_BIG_ENDIAN) num_bytes = SWAPINT(num_bytes);
+    cst_fwrite(fd,&num_bytes,4,1);        
+    d_short = RIFF_FORMAT_PCM;        /* sample type */
+    if (CST_BIG_ENDIAN) d_short = SWAPSHORT(d_short);
+    cst_fwrite(fd,&d_short,2,1);          
+    d_short = cst_wave_num_channels(w); /* number of channels */
+    if (CST_BIG_ENDIAN) d_short = SWAPSHORT(d_short);
+    cst_fwrite(fd,&d_short,2,1);          
+    d_int = cst_wave_sample_rate(w);  /* sample rate */
+    if (CST_BIG_ENDIAN) d_int = SWAPINT(d_int);
+    cst_fwrite(fd,&d_int,4,1);  
+    d_int = (cst_wave_sample_rate(w)
+	     * cst_wave_num_channels(w)
+	     * sizeof(short));        /* average bytes per second */
+    if (CST_BIG_ENDIAN) d_int = SWAPINT(d_int);
+    cst_fwrite(fd,&d_int,4,1);
+    d_short = (cst_wave_num_channels(w)
+	       * sizeof(short));      /* block align */
+    if (CST_BIG_ENDIAN) d_short = SWAPSHORT(d_short);
+    cst_fwrite(fd,&d_short,2,1);          
+    d_short = 2 * 8;                  /* bits per sample */
+    if (CST_BIG_ENDIAN) d_short = SWAPSHORT(d_short);
+    cst_fwrite(fd,&d_short,2,1);          
+    info = "data";
+    cst_fwrite(fd,info,1,4);
+    d_int = (cst_wave_num_channels(w)
+	     * cst_wave_num_samples(w)
+	     * sizeof(short));	      /* bytes in data */
+    if (CST_BIG_ENDIAN) d_int = SWAPINT(d_int);
+    cst_fwrite(fd,&d_int,4,1);  
+
+    if (CST_BIG_ENDIAN)
+    {
+        short *xdata = cst_alloc(short,cst_wave_num_channels(w)*
+				 cst_wave_num_samples(w));
+	memmove(xdata,cst_wave_samples(w),
+		sizeof(short)*cst_wave_num_channels(w)*
+		cst_wave_num_samples(w));
+	swap_bytes_short(xdata,
+			 cst_wave_num_channels(w)*
+			 cst_wave_num_samples(w));
+	n = cst_fwrite(fd,xdata,sizeof(short),
+		       cst_wave_num_channels(w)*cst_wave_num_samples(w));
+	cst_free(xdata);
+    }
+    else
+    {
+	n = cst_fwrite(fd,cst_wave_samples(w),sizeof(short),
+		       cst_wave_num_channels(w)*cst_wave_num_samples(w));
+    }
+
+    if (n != cst_wave_num_channels(w)*cst_wave_num_samples(w))
+	return -1;
+    else
+	return 0;
+	
+}
+
+
+

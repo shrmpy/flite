@@ -46,7 +46,7 @@ DIRNAME=main
 BUILD_DIRS = 
 ALL_DIRS= 
 SRCS = flite_main.c flite_time_main.c t2p_main.c compile_regexes.c \
-       flitevox_info_main.c word_times_main.c
+       flitevox_info_main.c word_times_main.c wav_stdout_main.c
 #      world_main.c 
 OBJS = $(SRCS:.c=.o) flite_voice_list.o 
 FILES = Makefile $(SRCS)
@@ -56,6 +56,7 @@ ALL = shared_libs \
       $(BINDIR)/flite$(EXEEXT) \
       $(BINDIR)/t2p$(EXEEXT) $(BINDIR)/compile_regexes$(EXEEXT) \
       $(BINDIR)/flitevox_info$(EXEEXT) \
+      $(BINDIR)/wav_stdout$(EXEEXT) \
       flite_voice_list.c each $(EXTRABINS)
 
 VOICES=$(VOXES)
@@ -86,6 +87,7 @@ flite_time_LIBS_deps = $(flite_time_LIBS:%=$(LIBDIR)/lib%.a)
 
 LOCAL_CLEAN = $(BINDIR)/flite$(EXEEXT) $(BINDIR)/flite_time$(EXEEXT) \
               $(BINDIR)/t2p$(EXEEXT) \
+              $(BINDIR)/wav_stdout$(EXEEXT) \
               $(SHAREDARLIBS) $(SHAREDLIBS) $(VERSIONSHAREDLIBS) \
               $(flite_LIBS_deps) $(VOICES:%=$(BINDIR)/flite_%) \
               flite_voice_list.c
@@ -137,6 +139,13 @@ $(BINDIR)/word_times$(EXEEXT): word_times_main.o $(flite_LIBS_deps)
 
 $(BINDIR)/compile_regexes$(EXEEXT): compile_regexes.o $(FLITELIBS)
 	$(CC) $(CFLAGS) -o $@ compile_regexes.o $(FLITELIBFLAGS) $(LDFLAGS)
+
+$(BINDIR)/wav_stdout$(EXEEXT): wav_stdout_main.o flite_lang_list $(flite_LIBS_deps)
+	$(TOP)/tools/make_voice_list $(VOICES)
+	rm -f flite_voice_list.o
+	$(MAKE) flite_voice_list.o
+	$(CC) $(CFLAGS) -o $@ wav_stdout_main.o flite_voice_list.o flite_lang_list.o $(flite_LIBS_flags) $(LDFLAGS)
+
 
 each:
 	@ for i in $(VOICES) ; \
