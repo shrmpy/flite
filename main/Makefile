@@ -141,7 +141,7 @@ $(BINDIR)/compile_regexes$(EXEEXT): compile_regexes.o $(FLITELIBS)
 	$(CC) $(CFLAGS) -o $@ compile_regexes.o $(FLITELIBFLAGS) $(LDFLAGS)
 
 $(BINDIR)/wav_stdout$(EXEEXT): wav_stdout_main.o flite_lang_list $(flite_LIBS_deps)
-	$(TOP)/tools/make_voice_list $(VOICES)
+	$(TOP)/tools/make_voice_list cmu_time_awb
 	rm -f flite_voice_list.o
 	$(MAKE) flite_voice_list.o
 	$(CC) $(CFLAGS) -o $@ wav_stdout_main.o flite_voice_list.o flite_lang_list.o $(flite_LIBS_flags) $(LDFLAGS)
