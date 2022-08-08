@@ -141,7 +141,7 @@ $(BINDIR)/compile_regexes$(EXEEXT): compile_regexes.o $(FLITELIBS)
 	$(CC) $(CFLAGS) -o $@ compile_regexes.o $(FLITELIBFLAGS) $(LDFLAGS)
 
 $(BINDIR)/wav_stdout$(EXEEXT): 
-	$(CC) $(CFLAGS) -o $@ wav_stdout_main.c -I$(TOP)/include -L$(TOP)/lib \
+	$(CC) $(CFLAGS) -o $@ wav_stdout_main.c -I$(TOP)/include -L$(LIBDIR) \
 	        -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite -lm
 
 
