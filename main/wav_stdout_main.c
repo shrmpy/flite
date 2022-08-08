@@ -2,7 +2,7 @@
 
 
 cst_voice *register_cmu_us_kal();
-void fgj_wave_copy_riff();
+int fgj_wave_copy_riff(cst_wave *w);
 
 int main(void)
 {
