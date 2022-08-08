@@ -140,11 +140,9 @@ $(BINDIR)/word_times$(EXEEXT): word_times_main.o $(flite_LIBS_deps)
 $(BINDIR)/compile_regexes$(EXEEXT): compile_regexes.o $(FLITELIBS)
 	$(CC) $(CFLAGS) -o $@ compile_regexes.o $(FLITELIBFLAGS) $(LDFLAGS)
 
-$(BINDIR)/wav_stdout$(EXEEXT): wav_stdout_main.o flite_lang_list $(flite_LIBS_deps)
-	$(TOP)/tools/make_voice_list cmu_time_awb
-	rm -f flite_voice_list.o
-	$(MAKE) flite_voice_list.o
-	$(CC) $(CFLAGS) -o $@ wav_stdout_main.o flite_voice_list.o flite_lang_list.o $(flite_LIBS_flags) $(LDFLAGS)
+$(BINDIR)/wav_stdout$(EXEEXT): 
+        $(CC) -Wall -g -o $@ wav_stdout_main.c -I$(TOP)/include -L$(TOP)/lib \
+	        -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite -lm
 
 
 each:
