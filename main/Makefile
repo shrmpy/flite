@@ -140,9 +140,9 @@ $(BINDIR)/word_times$(EXEEXT): word_times_main.o $(flite_LIBS_deps)
 $(BINDIR)/compile_regexes$(EXEEXT): compile_regexes.o $(FLITELIBS)
 	$(CC) $(CFLAGS) -o $@ compile_regexes.o $(FLITELIBFLAGS) $(LDFLAGS)
 
-$(BINDIR)/wav_stdout$(EXEEXT): 
-	$(CC) $(CFLAGS) -o $@ wav_stdout_main.c -I$(TOP)/include -L$(LIBDIR) \
-	        -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite -lm
+$(BINDIR)/wav_stdout$(EXEEXT): wav_stdout_main.o
+	$(CC) $(CFLAGS) -o $@ wav_stdout_main.o -I$(TOP)/include -L$(LIBDIR) -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite -lm
+
 
 
 each:
